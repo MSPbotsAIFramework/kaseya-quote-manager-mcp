@@ -19,7 +19,7 @@ from mcp.server.fastmcp import FastMCP
 from pydantic import Field
 
 from ..api_client import QuoteManagerClient
-from ._common import ClientFactory, ModifiedAfter, Page, PageSize, READ_ONLY, RecordId, list_page, run_tool
+from ._common import ClientFactory, ModifiedAfter, Offset, Page, PageSize, READ_ONLY, RecordId, list_page, run_tool
 
 
 def register(mcp: FastMCP, client_factory: ClientFactory) -> None:
@@ -29,11 +29,12 @@ def register(mcp: FastMCP, client_factory: ClientFactory) -> None:
         page: Page = None,
         pageSize: PageSize = None,
         modifiedAfter: ModifiedAfter = None,
+        offset: Offset = None,
     ) -> str:
         """List products: number, MPN, title, type, brand, category, price, retail price, status flags."""
 
         async def action(client: QuoteManagerClient) -> dict:
-            return await list_page(client, "product", "products", {"manufacturerPartNumber": manufacturerPartNumber, "modifiedAfter": modifiedAfter}, page, pageSize)
+            return await list_page(client, "product", "products", {"manufacturerPartNumber": manufacturerPartNumber, "modifiedAfter": modifiedAfter}, page, pageSize, offset)
 
         return await run_tool("kqm_product_list", client_factory, action)
 
@@ -51,11 +52,12 @@ def register(mcp: FastMCP, client_factory: ClientFactory) -> None:
         productID: Annotated[int | None, Field(description="Only images of this product id.", ge=1)] = None,
         page: Page = None,
         pageSize: PageSize = None,
+        offset: Offset = None,
     ) -> str:
         """List product image URLs by product number."""
 
         async def action(client: QuoteManagerClient) -> dict:
-            return await list_page(client, "productimage", "images", {"productID": productID}, page, pageSize)
+            return await list_page(client, "productimage", "images", {"productID": productID}, page, pageSize, offset)
 
         return await run_tool("kqm_product_image_list", client_factory, action)
 
@@ -84,11 +86,12 @@ def register(mcp: FastMCP, client_factory: ClientFactory) -> None:
         page: Page = None,
         pageSize: PageSize = None,
         modifiedAfter: ModifiedAfter = None,
+        offset: Offset = None,
     ) -> str:
         """List product brands: id, name, image file."""
 
         async def action(client: QuoteManagerClient) -> dict:
-            return await list_page(client, "brand", "brands", {"modifiedAfter": modifiedAfter}, page, pageSize)
+            return await list_page(client, "brand", "brands", {"modifiedAfter": modifiedAfter}, page, pageSize, offset)
 
         return await run_tool("kqm_brand_list", client_factory, action)
 

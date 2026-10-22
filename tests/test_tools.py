@@ -22,7 +22,7 @@ from kaseya_quote_manager_mcp.api_client import QuoteManagerError
 from kaseya_quote_manager_mcp.server import INSTRUCTIONS, create_mcp_server
 from kaseya_quote_manager_mcp.tools.navigation import DOMAINS
 
-PAGED = {"page", "pageSize"}
+PAGED = {"page", "pageSize", "offset"}
 MOD = {"modifiedAfter"}
 
 # Tool name -> its full parameter set. Names and parameters are a public

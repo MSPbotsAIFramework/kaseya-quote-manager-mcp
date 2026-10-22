@@ -18,7 +18,7 @@ from typing import Any
 from mcp.server.fastmcp import FastMCP
 
 from ..api_client import QuoteManagerClient
-from ._common import ClientFactory, ModifiedAfter, Page, PageSize, READ_ONLY, RecordId, list_page, run_tool
+from ._common import ClientFactory, ModifiedAfter, Offset, Page, PageSize, READ_ONLY, RecordId, list_page, run_tool
 
 
 def register(mcp: FastMCP, client_factory: ClientFactory) -> None:
@@ -26,11 +26,12 @@ def register(mcp: FastMCP, client_factory: ClientFactory) -> None:
     async def kqm_employee_list(
         page: Page = None,
         pageSize: PageSize = None,
+        offset: Offset = None,
     ) -> str:
         """List employees: name, email, active flag, visibility, last login."""
 
         async def action(client: QuoteManagerClient) -> dict:
-            return await list_page(client, "employee", "employees", {}, page, pageSize)
+            return await list_page(client, "employee", "employees", {}, page, pageSize, offset)
 
         return await run_tool("kqm_employee_list", client_factory, action)
 
@@ -48,11 +49,12 @@ def register(mcp: FastMCP, client_factory: ClientFactory) -> None:
         page: Page = None,
         pageSize: PageSize = None,
         modifiedAfter: ModifiedAfter = None,
+        offset: Offset = None,
     ) -> str:
         """List warehouses: name, email, address."""
 
         async def action(client: QuoteManagerClient) -> dict:
-            return await list_page(client, "warehouse", "warehouses", {"modifiedAfter": modifiedAfter}, page, pageSize)
+            return await list_page(client, "warehouse", "warehouses", {"modifiedAfter": modifiedAfter}, page, pageSize, offset)
 
         return await run_tool("kqm_warehouse_list", client_factory, action)
 

@@ -19,7 +19,7 @@ from mcp.server.fastmcp import FastMCP
 from pydantic import Field
 
 from ..api_client import QuoteManagerClient
-from ._common import ClientFactory, ModifiedAfter, Page, PageSize, READ_ONLY, RecordId, list_page, run_tool
+from ._common import ClientFactory, ModifiedAfter, Offset, Page, PageSize, READ_ONLY, RecordId, list_page, run_tool
 
 
 def register(mcp: FastMCP, client_factory: ClientFactory) -> None:
@@ -29,11 +29,12 @@ def register(mcp: FastMCP, client_factory: ClientFactory) -> None:
         page: Page = None,
         pageSize: PageSize = None,
         modifiedAfter: ModifiedAfter = None,
+        offset: Offset = None,
     ) -> str:
         """List quotes: number, title, status, customer, owner, contact, delivery details, expiry, dates."""
 
         async def action(client: QuoteManagerClient) -> dict:
-            return await list_page(client, "quote", "quotes", {"quoteNumber": quoteNumber, "modifiedAfter": modifiedAfter}, page, pageSize)
+            return await list_page(client, "quote", "quotes", {"quoteNumber": quoteNumber, "modifiedAfter": modifiedAfter}, page, pageSize, offset)
 
         return await run_tool("kqm_quote_list", client_factory, action)
 
@@ -51,11 +52,12 @@ def register(mcp: FastMCP, client_factory: ClientFactory) -> None:
         quoteID: Annotated[int | None, Field(description="Only sections of this quote id.", ge=1)] = None,
         page: Page = None,
         pageSize: PageSize = None,
+        offset: Offset = None,
     ) -> str:
         """List quote sections: quote id, title, type, line order, multi-choice / selected flags."""
 
         async def action(client: QuoteManagerClient) -> dict:
-            return await list_page(client, "quotesection", "sections", {"quoteID": quoteID}, page, pageSize)
+            return await list_page(client, "quotesection", "sections", {"quoteID": quoteID}, page, pageSize, offset)
 
         return await run_tool("kqm_quote_section_list", client_factory, action)
 
@@ -73,11 +75,12 @@ def register(mcp: FastMCP, client_factory: ClientFactory) -> None:
         quoteSectionID: Annotated[int | None, Field(description="Only lines of this quote section id.", ge=1)] = None,
         page: Page = None,
         pageSize: PageSize = None,
+        offset: Offset = None,
     ) -> str:
         """List quote lines: product, title, price, quantity, tax, discount, optional / recurring flags."""
 
         async def action(client: QuoteManagerClient) -> dict:
-            return await list_page(client, "quoteline", "lines", {"quoteSectionID": quoteSectionID}, page, pageSize)
+            return await list_page(client, "quoteline", "lines", {"quoteSectionID": quoteSectionID}, page, pageSize, offset)
 
         return await run_tool("kqm_quote_line_list", client_factory, action)
 
@@ -96,11 +99,12 @@ def register(mcp: FastMCP, client_factory: ClientFactory) -> None:
         page: Page = None,
         pageSize: PageSize = None,
         modifiedAfter: ModifiedAfter = None,
+        offset: Offset = None,
     ) -> str:
         """List sales orders: number, customer, contact, quote, status, fulfillment, delivery, totals."""
 
         async def action(client: QuoteManagerClient) -> dict:
-            return await list_page(client, "salesorder", "sales_orders", {"orderNumber": orderNumber, "modifiedAfter": modifiedAfter}, page, pageSize)
+            return await list_page(client, "salesorder", "sales_orders", {"orderNumber": orderNumber, "modifiedAfter": modifiedAfter}, page, pageSize, offset)
 
         return await run_tool("kqm_sales_order_list", client_factory, action)
 
@@ -119,11 +123,12 @@ def register(mcp: FastMCP, client_factory: ClientFactory) -> None:
         page: Page = None,
         pageSize: PageSize = None,
         modifiedAfter: ModifiedAfter = None,
+        offset: Offset = None,
     ) -> str:
         """List sales order lines: product, price, cost, quantity, tax, discount, serial numbers."""
 
         async def action(client: QuoteManagerClient) -> dict:
-            return await list_page(client, "salesorderline", "lines", {"salesOrderID": salesOrderID, "modifiedAfter": modifiedAfter}, page, pageSize)
+            return await list_page(client, "salesorderline", "lines", {"salesOrderID": salesOrderID, "modifiedAfter": modifiedAfter}, page, pageSize, offset)
 
         return await run_tool("kqm_sales_order_line_list", client_factory, action)
 
@@ -142,11 +147,12 @@ def register(mcp: FastMCP, client_factory: ClientFactory) -> None:
         page: Page = None,
         pageSize: PageSize = None,
         modifiedAfter: ModifiedAfter = None,
+        offset: Offset = None,
     ) -> str:
         """List sales order payments: order id, payment type, amount, transaction id, dates."""
 
         async def action(client: QuoteManagerClient) -> dict:
-            return await list_page(client, "salesorderpayment", "payments", {"salesOrderID": salesOrderID, "modifiedAfter": modifiedAfter}, page, pageSize)
+            return await list_page(client, "salesorderpayment", "payments", {"salesOrderID": salesOrderID, "modifiedAfter": modifiedAfter}, page, pageSize, offset)
 
         return await run_tool("kqm_sales_order_payment_list", client_factory, action)
 

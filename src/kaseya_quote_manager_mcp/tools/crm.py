@@ -19,7 +19,7 @@ from mcp.server.fastmcp import FastMCP
 from pydantic import Field
 
 from ..api_client import QuoteManagerClient
-from ._common import ClientFactory, ModifiedAfter, Page, PageSize, READ_ONLY, RecordId, list_page, run_tool
+from ._common import ClientFactory, ModifiedAfter, Offset, Page, PageSize, READ_ONLY, RecordId, list_page, run_tool
 
 
 def register(mcp: FastMCP, client_factory: ClientFactory) -> None:
@@ -28,11 +28,12 @@ def register(mcp: FastMCP, client_factory: ClientFactory) -> None:
         page: Page = None,
         pageSize: PageSize = None,
         modifiedAfter: ModifiedAfter = None,
+        offset: Offset = None,
     ) -> str:
         """List customers: account number, name, owner, tax number, billing address, price group, credit."""
 
         async def action(client: QuoteManagerClient) -> dict:
-            return await list_page(client, "customer", "customers", {"modifiedAfter": modifiedAfter}, page, pageSize)
+            return await list_page(client, "customer", "customers", {"modifiedAfter": modifiedAfter}, page, pageSize, offset)
 
         return await run_tool("kqm_customer_list", client_factory, action)
 
@@ -51,11 +52,12 @@ def register(mcp: FastMCP, client_factory: ClientFactory) -> None:
         page: Page = None,
         pageSize: PageSize = None,
         modifiedAfter: ModifiedAfter = None,
+        offset: Offset = None,
     ) -> str:
         """List customer delivery addresses: contact, address, city, state, country, instructions."""
 
         async def action(client: QuoteManagerClient) -> dict:
-            return await list_page(client, "customeraddress", "addresses", {"customerID": customerID, "modifiedAfter": modifiedAfter}, page, pageSize)
+            return await list_page(client, "customeraddress", "addresses", {"customerID": customerID, "modifiedAfter": modifiedAfter}, page, pageSize, offset)
 
         return await run_tool("kqm_customer_address_list", client_factory, action)
 
@@ -74,11 +76,12 @@ def register(mcp: FastMCP, client_factory: ClientFactory) -> None:
         page: Page = None,
         pageSize: PageSize = None,
         modifiedAfter: ModifiedAfter = None,
+        offset: Offset = None,
     ) -> str:
         """List customer contacts: name, email, phone, mobile, invoice e-mailing, portal logins."""
 
         async def action(client: QuoteManagerClient) -> dict:
-            return await list_page(client, "contact", "contacts", {"customerID": customerID, "modifiedAfter": modifiedAfter}, page, pageSize)
+            return await list_page(client, "contact", "contacts", {"customerID": customerID, "modifiedAfter": modifiedAfter}, page, pageSize, offset)
 
         return await run_tool("kqm_contact_list", client_factory, action)
 

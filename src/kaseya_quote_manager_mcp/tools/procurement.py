@@ -19,7 +19,7 @@ from mcp.server.fastmcp import FastMCP
 from pydantic import Field
 
 from ..api_client import QuoteManagerClient
-from ._common import ClientFactory, ModifiedAfter, Page, PageSize, READ_ONLY, RecordId, list_page, run_tool
+from ._common import ClientFactory, ModifiedAfter, Offset, Page, PageSize, READ_ONLY, RecordId, list_page, run_tool
 
 
 def register(mcp: FastMCP, client_factory: ClientFactory) -> None:
@@ -29,11 +29,12 @@ def register(mcp: FastMCP, client_factory: ClientFactory) -> None:
         page: Page = None,
         pageSize: PageSize = None,
         modifiedAfter: ModifiedAfter = None,
+        offset: Offset = None,
     ) -> str:
         """List purchase orders: number, supplier, warehouse, sales order, type, status, due date, addresses."""
 
         async def action(client: QuoteManagerClient) -> dict:
-            return await list_page(client, "purchaseorder", "purchase_orders", {"orderNumber": orderNumber, "modifiedAfter": modifiedAfter}, page, pageSize)
+            return await list_page(client, "purchaseorder", "purchase_orders", {"orderNumber": orderNumber, "modifiedAfter": modifiedAfter}, page, pageSize, offset)
 
         return await run_tool("kqm_purchase_order_list", client_factory, action)
 
@@ -52,11 +53,12 @@ def register(mcp: FastMCP, client_factory: ClientFactory) -> None:
         page: Page = None,
         pageSize: PageSize = None,
         modifiedAfter: ModifiedAfter = None,
+        offset: Offset = None,
     ) -> str:
         """List purchase order lines: product, price, landed cost, quantity ordered / received, serials."""
 
         async def action(client: QuoteManagerClient) -> dict:
-            return await list_page(client, "purchaseorderline", "lines", {"purchaseOrderID": purchaseOrderID, "modifiedAfter": modifiedAfter}, page, pageSize)
+            return await list_page(client, "purchaseorderline", "lines", {"purchaseOrderID": purchaseOrderID, "modifiedAfter": modifiedAfter}, page, pageSize, offset)
 
         return await run_tool("kqm_purchase_order_line_list", client_factory, action)
 
@@ -75,11 +77,12 @@ def register(mcp: FastMCP, client_factory: ClientFactory) -> None:
         page: Page = None,
         pageSize: PageSize = None,
         modifiedAfter: ModifiedAfter = None,
+        offset: Offset = None,
     ) -> str:
         """List extra costs on purchase orders (freight, fees): description, amount, tax."""
 
         async def action(client: QuoteManagerClient) -> dict:
-            return await list_page(client, "purchaseordercost", "costs", {"purchaseOrderID": purchaseOrderID, "modifiedAfter": modifiedAfter}, page, pageSize)
+            return await list_page(client, "purchaseordercost", "costs", {"purchaseOrderID": purchaseOrderID, "modifiedAfter": modifiedAfter}, page, pageSize, offset)
 
         return await run_tool("kqm_purchase_order_cost_list", client_factory, action)
 
@@ -97,11 +100,12 @@ def register(mcp: FastMCP, client_factory: ClientFactory) -> None:
         page: Page = None,
         pageSize: PageSize = None,
         modifiedAfter: ModifiedAfter = None,
+        offset: Offset = None,
     ) -> str:
         """List suppliers: account number, name, email, online ordering and ETA, notes."""
 
         async def action(client: QuoteManagerClient) -> dict:
-            return await list_page(client, "supplier", "suppliers", {"modifiedAfter": modifiedAfter}, page, pageSize)
+            return await list_page(client, "supplier", "suppliers", {"modifiedAfter": modifiedAfter}, page, pageSize, offset)
 
         return await run_tool("kqm_supplier_list", client_factory, action)
 
@@ -120,11 +124,12 @@ def register(mcp: FastMCP, client_factory: ClientFactory) -> None:
         page: Page = None,
         pageSize: PageSize = None,
         modifiedAfter: ModifiedAfter = None,
+        offset: Offset = None,
     ) -> str:
         """List product-supplier links: which supplier sells a product, at what cost, with what stock."""
 
         async def action(client: QuoteManagerClient) -> dict:
-            return await list_page(client, "productsupplier", "product_suppliers", {"productID": productID, "modifiedAfter": modifiedAfter}, page, pageSize)
+            return await list_page(client, "productsupplier", "product_suppliers", {"productID": productID, "modifiedAfter": modifiedAfter}, page, pageSize, offset)
 
         return await run_tool("kqm_product_supplier_list", client_factory, action)
 

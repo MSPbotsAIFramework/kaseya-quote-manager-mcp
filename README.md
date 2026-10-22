@@ -30,8 +30,11 @@ A request to `/mcp` without the header gets HTTP 401.
 ## Tools
 
 All tools return a JSON string. Lists take `page` (from 1) and `pageSize` (max 100) and return
-`{count, page, has_more, next_page}`; most also take `modifiedAfter` (ISO date-time) to return only
-records changed since then. Every `_get` tool takes **id**.
+`{count, page, has_more, next_page, offset, next_offset}`; most also take `modifiedAfter` (ISO date-time) to return only
+records changed since then. Lists also take `offset` (0-based record position, overrides `page`):
+pass `next_offset` from the previous result to continue, because when a page is cut to fit the
+response size limit, `next_offset` starts right after the last record returned, while the rest of
+that page is on no other page number. Every `_get` tool takes **id**.
 
 | Area | Tools |
 |---|---|

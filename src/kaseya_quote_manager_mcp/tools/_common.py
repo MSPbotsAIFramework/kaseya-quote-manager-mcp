@@ -40,6 +40,10 @@ RecordId = Annotated[int, Field(description="Record id.", ge=1)]
 ParentId = Annotated[int | None, Field(description="Only records of this parent id.", ge=1)]
 Page = Annotated[int | None, Field(description="Page number, starting at 1.", ge=1)]
 PageSize = Annotated[int | None, Field(description=f"Records per page (default and max {MAX_PAGE_SIZE}).", ge=1, le=MAX_PAGE_SIZE)]
+Offset = Annotated[
+    int | None,
+    Field(description="Record position to start from (0-based, overrides page); pass next_offset from the previous result.", ge=0),
+]
 ModifiedAfter = Annotated[str | None, Field(description="ISO 8601 date-time: only records changed after it.")]
 
 
@@ -47,13 +51,48 @@ def compact(values: dict[str, Any]) -> dict[str, Any]:
     return {k: v for k, v in values.items() if v is not None and v != ""}
 
 
-async def list_page(client: QuoteManagerClient, path: str, key: str, params: dict[str, Any], page: int | None, page_size: int | None) -> dict:
-    """GET a list (a plain JSON array) and add paging hints."""
-    number, size = page or 1, page_size or MAX_PAGE_SIZE
+def locate(offset: int | None, page: int | None, page_size: int | None) -> tuple[int, int, int]:
+    """(page, pageSize, start) for a read from record ``start``.
+
+    Quote Manager pages by number only, so a position is reached by asking for the page that
+    holds it (same page size) and skipping the records before it.
+    """
+    size = page_size or MAX_PAGE_SIZE
+    start = offset if offset is not None else ((page or 1) - 1) * size
+    return start // size + 1, size, start
+
+
+async def list_page(
+    client: QuoteManagerClient,
+    path: str,
+    key: str,
+    params: dict[str, Any],
+    page: int | None,
+    page_size: int | None,
+    offset: int | None = None,
+) -> dict:
+    """GET a list (a plain JSON array) from record ``offset`` (or page ``page``) and add paging hints.
+
+    next_offset continues right after the last record returned, also when the result is cut to
+    fit the size limit (a page number cannot: the rest of a cut page is not on any other page).
+    """
+    number, size, start = locate(offset, page, page_size)
     payload = await client.get(path, compact(params) | {"page": number, "pageSize": size})
     rows = payload if isinstance(payload, list) else []
     full = len(rows) >= size
-    return compact({key: rows, "count": len(rows), "page": number, "has_more": full, "next_page": number + 1 if full else None})
+    rows = rows[start - (number - 1) * size :]
+    return compact(
+        {
+            key: rows,
+            "count": len(rows),
+            "page": number,
+            "has_more": full,
+            "next_page": number + 1 if full else None,
+            "offset": start,
+            "next_offset": start + len(rows) if full else None,
+            "_resume": {"key": "next_offset", "start": start},
+        }
+    )
 
 
 async def run_tool(
