@@ -100,7 +100,8 @@ uv run pytest
 ## Delivery notes
 
 - **Tool count (41) and prompts (3).** Kept as is because the names are an existing contract; the
-  parameters of every tool match the earlier version and the official API exactly.
+  parameters of every tool match the earlier version and the official API, plus `offset` on the
+  list tools (handled here, see paging above).
 - **API source.** The official OpenAPI document is published at
   `https://api.kaseyaquotemanager.com/docs/v1/swagger.json` (API Reference v1, 39 read-only
   endpoints); the getting-started guide is in the Kaseya Quote Manager help center.
